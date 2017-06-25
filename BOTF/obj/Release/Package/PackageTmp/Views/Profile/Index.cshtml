@@ -1,0 +1,155 @@
+﻿@model BOTF.Models.User
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h4>@Model.Name's Profile</h4>
+
+<table id="profiledetails" class="table">
+    <tr>
+        <th>Name</th>
+        
+        <th>Username</th>
+    
+     
+        <th>Profile Picture</th>
+    </tr>
+    <tr>
+         <td>@Model.Name</td>
+  
+        <td>@ViewBag.username</td>
+      
+        <td><img width="200px" height="200px" src='@Model.Image' class="img-polaroid"></td>
+    </tr>
+</table>
+
+<div id="VoteHistory"></div>
+<div id="ProposalHistory"></div>
+
+
+@section scripts
+{
+     <script  id="VHistory" type="text/x-handlebars-template">
+            <h4>Votes</h4>
+    <table id="votehistorydetails" class="table">
+   
+        <table id="votehistorydetails" class="table">
+            <tr>
+                <th></th>
+                <th>Artist</th>
+                <th>Venue</th>
+                
+            </tr>
+            <div class="votehistory">
+     {{#each History.$values}}
+       
+            <tr >
+                <td>
+                    <img src="{{Image}}" width="30px" height="30px" /></td>
+                <td>{{Artist}}
+                </td>
+                <td>{{Venue}}
+                </td>
+              
+
+            </tr>
+       
+       
+   {{/each}}
+            </div>
+
+        </table>
+
+     </script>
+   
+     <script  id="PHistory" type="text/x-handlebars-template">
+        <h4>Proposal History</h4>
+        <table  class="table">
+            <div class="votehistory">
+                {{#each History.$values}}
+                <tr data-id={{ProposalId}}>
+                        <td >
+
+                            
+                             @{string description = "{{Artist}}" + " @ " + "{{Venue}}";}
+                             <a href ='@Url.Content("~/Proposal/Index/{{ProposalId}}")'>@description</a>
+       
+                        </td>
+                </tr>
+                {{/each}}
+            </div>
+        </table>
+     </script>
+
+     <script type="text/javascript">
+         $(document).ready(function () {
+             var votehistory = $("#VHistory").html();
+             vhistory = Handlebars.compile(votehistory);
+             var proposalhistory = $("#PHistory").html();
+             phistory = Handlebars.compile(proposalhistory);
+             GetUsersVoteHistory();
+             GetUsersProposalHistory();
+         });
+
+         //events
+         $('#unvote').live('click',function(){
+          
+             $.ajax({
+                 url: '@Url.RouteUrl("DefaultApi", new { httproute = "", controller = "VoteHistory" })' ,
+                data:{Id:$(this).attr('data-Id'), ProposalId:$(this).attr('data-ProposalId')},
+                
+                type: "DELETE",
+                statusCode: {
+                    200: function () {
+                        console.log("Vote was unvoted Successfully");
+                    },
+                    304: function () {
+                        console.log("Vote was not unvoted");
+                    },
+                    400:function(){
+                        alert("Bad Request");
+                    }
+
+                }
+            });
+        });
+        //end events
+
+        //functions
+        function GetUsersVoteHistory() {
+            $.ajax({
+                url: '@Url.RouteUrl("DefaultApi", new { httproute = "", controller = "VoteHistory" })' ,
+                data:{id:@Model.UserId, voteOrproposal:false},
+                type: "GET",
+                success: function (data) {
+                    console.log(data);
+                    //console.log(vhistory({History:data}));
+                    $('#VoteHistory').html(vhistory({History:data}));
+                
+                }
+
+            });
+        };
+
+        function GetUsersProposalHistory() {
+            $.ajax({
+                url: '@Url.RouteUrl("DefaultApi", new { httproute = "", controller = "VoteHistory" })' ,
+                data:{id:@Model.UserId, voteOrproposal:true},
+                type: "GET",
+                success: function (data) {
+                    console.log(data);
+                    
+                    $('#ProposalHistory').html(phistory({History:data}));
+                   
+                }
+
+            });
+        };
+        //end functions
+
+
+    </script>
+}
+
+

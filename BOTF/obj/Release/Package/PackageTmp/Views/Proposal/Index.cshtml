@@ -1,0 +1,520 @@
+﻿    @model BOTF.Models.Proposal
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<div class="proposalData">
+    <h1 style="color: Gray;">@Model.Artist @@ @Model.Venue</h1>
+    
+    <h3><span>@Model.Votes</span> Votes<span> @if (WebSecurity.IsAuthenticated)
+    {
+            <button id="ProposalDetailVote" class="btn" data-proposalid ="@Model.Id">Vote</button>
+            
+    }   </span></h3>
+    @{
+     
+        string message = "The event " + @Model.Artist + " at " + @Model.Venue + " has reached " + @Model.Votes + " Get on board and vote for it! ";
+     }
+   
+    <div id="twitterButton" ></div>
+    @*<a href="https://twitter.com/share" data-text="@message" data-url='@Url.Action("Index", "Proposal", new { Model.Id})' class="twitter-share-button" data-lang="en">Tweet</a>*@
+    <div> <button id="share"  class="btn" ><img src="~/Content/images/facebook-icon.png" width="25px" height="25px"/>Share</button> </div> 
+    
+    <img  src='@Model.Image' class="img-rounded"  height="400px" width="400px" />
+    <div id="bio">
+        <p>@Html.Raw(Model.Biography)</p>
+    </div>
+
+
+    <h4 style="color: Gray;">@Model.Genre</h4>
+
+    @{
+        if (WebSecurity.IsAuthenticated)
+        {
+            
+            
+           
+           
+           
+           
+         <div class ="row">
+            <div class="span2"></div>
+            <div class="span8">
+                 <input id="CommentInput" type="text"></input>
+                 <a id="postComment" class="btn"  data-proposalid ="@Model.Id">Post</a>
+            </div>
+            <div class="span2"></div>
+        </div>
+        <div class ="row">
+            <div class="span2"></div>
+            <div class="span8 pre-scrollable" id="comments" ></div>
+            <div class="span2"></div>
+        </div>
+           
+            <div id="updates" style="display: none;"></div>
+            
+         <div id="Rankings"></div>
+      
+        }
+       
+    }
+      <div id="similarproposals" ></div>
+@section scripts
+    {
+     @Scripts.Render("~/Scripts/bootstrap.min.js")
+      @Scripts.Render("~/Scripts/jquery.timeago.js")
+ 
+      @Scripts.Render("~/Scripts/jquery.signalR-0.5.3.min.js")
+   <script src="~/signalr/hubs" type="text/javascript"></script>
+    <pre style="display:inline-block; height:10px"></pre>
+    <script  id="CommentsHistory" type="text/x-handlebars-template">
+      
+        {{#each Comments.$values}}
+            <pre style="display:block; height:50px;">
+                 <div id="CommentBody"> {{Body}} </div> 
+              
+                <div id="commentFooter"> <abbr class="timeago" title='{{DateCreated}}' style="text-align:center;font-size:smaller;">{{DateCreated}}</abbr> <span style="text-align:center;font-size:smaller;">by {{CreatedBy}}</span></div>
+               
+                 {{#if Id }}
+                       
+                         <a href='#' id="deletecomment" data-Id = '{{Id}}' data-isFacebook='{{isFacebook}}'>{{#if isFacebook}} DeleteFB {{else}}Delete {{/if}}</a>
+                       
+                         
+                {{/if}}    
+        </pre>
+
+        
+        {{/each}}
+</script>
+
+     <script  id="VotersRanking" type="text/x-handlebars-template">
+         {{#if Ranks.$values}}
+                  <h3>Rankings</h3>
+         {{/if}}
+        
+         <table class="table table-condensed">
+      {{#each Ranks.$values}}
+           
+    
+            <tr>
+                <td>{{Rank}}</td>
+                <td><img src={{Image}} alt='' height="30px" width="30px" /></td>
+                <td>{{Name}}</td>
+                <td>{{Email}}</td>
+            </tr>
+      {{/each}}
+      
+
+</table>
+</script>
+
+    <script  id="SimilarProposals" type="text/x-handlebars-template">
+        {{#if Proposals}}
+                <h2>Similar Proposals</h2>
+   
+              {{#each Proposals}}
+                  <span id="SimilarProp">
+                        <h4>{{this.Artist}} @@ {{this.Venue}}</h4>
+                      <a href='@Url.Content("~/Proposal/Index?Id={{Id}}")'> <img src={{this.Image}} height="200px" width="200px"/></a>
+                
+                
+                  </span>
+              {{/each}}
+        {{/if}}
+      
+      
+</script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+          
+           
+          
+            var commentsDropdown = $("#CommentsHistory").html();
+            comments = Handlebars.compile(commentsDropdown);
+            var VotersRanking = $("#VotersRanking").html();
+            Rankings = Handlebars.compile(VotersRanking);
+            var SimilarProposals = $("#SimilarProposals").html();
+            similarproposals = Handlebars.compile(SimilarProposals);
+            GetRankings();
+            GetSimilarProposals();
+            updateComments();
+            
+            //Twitter
+            var settings = {
+    
+                url: location.href,
+                   
+                text: '@message',
+            linkText: 'Tweet',
+            linkClass: 'twitter'
+      
+      
+    
+        };
+
+            (function($) {
+
+                $.fn.tweetButton = function(options) {
+            
+
+                    var that = this;
+                
+    
+                    options = $.extend(settings, options);
+    
+                    return that.each(function() {
+    
+                        var html = '<a class="btn" id="twitterbutton"';
+                        html += ' href="http://twitter.com/share?' + 'url=' +
+                                '' + '&text=' + options.text + '">' + options.linkText + '</a>';
+              
+                        that.html(html);
+    
+    
+                    });
+  
+  
+                };
+
+            })(jQuery);
+            //End Twitter
+
+            $('#twitterButton').tweetButton();
+            var TwitterURLReferrer ="";
+            GetURLReferrer();
+            var connection = $.connection.messagesHub;
+            connection.updateComments = function () {
+                updateComments();
+            }
+            connection.updateRanks = function(){
+                GetRankings();
+            }
+            $('#ProposalDetailVote').click(function () {
+                //console.log($(this).parent().find('span'));
+                var $container = $(this).parent().parent().find('span').eq(0);
+                console.log( $(this).attr('data-proposalid'));
+                $.ajax({
+                    url: '@Url.RouteUrl("DefaultApi", new { httproute = "", controller = "Proposals" })' + '/' + $(this).attr('data-proposalid'),
+                    type: "PUT",
+                    complete: function (response) {
+                        if (response.status == 200) {
+                            console.log("Location: " + response.getResponseHeader("Location"));
+                            var votes = $container.text();
+                            votes++;
+                            $container.text(votes);
+                            connection.updateVoteHistory();
+                            connection.updateRankings();
+                            var ProposalId = getURLParam("Id", response.getResponseHeader("Location"));
+                            if (response.getResponseHeader("Location")) {
+                                PosttoFeed(response.getResponseHeader("Location"));
+                                TweetToFeed('@Url.RouteUrl("DefaultApi", new { httproute = "", controller = "TwitterProposal" })' + '?Id=' + ProposalId + '&ArtistPost=true');
+                        }
+                    }
+                        
+                    
+                },
+                    statusCode: {
+                        200: function () {
+                            console.log("Vote Successfull");
+                        },
+                        403: function () {
+                            console.log("You have reached your vote limit");
+                            alert("You have reached your vote limit. Consider sharing a proposal or Unvote");
+                        }
+
+
+
+                    }
+
+                });
+            });
+     
+            function updateComments(){
+                $.ajax({
+                    url: '@Url.RouteUrl("DefaultApi", new { httproute = "", controller = "Comments" })' + '/' + '@Model.Id',
+                
+                    type: "GET",
+                    success: function (data) {
+                        console.log(data);
+                        if (data.$values != "") {
+                     
+                            $('#comments').html(comments({ Comments: data }));
+                            $("abbr.timeago").timeago();
+                           
+                       
+                        }else {
+                            $('#comments').html("No Comments available yet")
+                        }
+                   
+                    }
+
+                });
+            }
+            $('#postComment').click( function () {
+           
+                var commentBody = $(this).parent().find('#CommentInput').val();
+                var proposalId = $(this).attr('data-proposalid');
+            
+                $.ajax({
+                    url: '@Url.RouteUrl("DefaultApi", new { httproute = "", controller = "Comments" })',
+                type: "POST",
+                data: { Id: proposalId, Body: commentBody },
+                statusCode: {
+                    201: function () {
+                        console.log("Comment Created");
+                        connection.updateCommentHistory();
+                    }
+
+
+
+                }
+
+            });
+            });
+            $('#deletecomment').live('click', function () {
+                var proposalId = $(this).parent().parent().parent().attr('data-proposalid');
+                var isFacebook = $(this).attr('data-isFacebook');
+                var id = $(this).attr('data-id');
+                console.log(proposalId + " "+ isFacebook + " ");
+                $.ajax({
+                    url: '@Url.RouteUrl("DefaultApi", new { httproute = "", controller = "Comments" })',
+                data: { Id: id,PostId:proposalId, isFacebook: isFacebook },
+                type: "DELETE",
+          
+                statusCode: {
+                    200: function () {
+                        console.log("Comment Deleted Successfully");
+                        connection.updateCommentHistory();
+                    },
+                    404: function () {
+                        console.log("Comment in Facebook was not Found. The corresponding files in database were deleted");
+                    },
+                    400: function () {
+                        console.log("Could not figure out the type of error");
+                    },
+                    502: function () {
+                        console.log("Token Expired. Will attempt to refresh Token");
+                        window.location = '@Url.Action("InitiateTokenRest", "Account", null)';
+                     }
+
+                 }
+
+            });
+              });
+
+
+            $.connection.hub.start({ transport: ['longPolling'] });
+
+
+        });
+
+        //events
+     
+        $('#share').live('click', function () {
+            var picture = $(this).parent().parent().find('img').attr('src');
+            var data = $(this).parent().parent().find('h1').text();
+            var vote = $(this).parent().parent().find('h3 span').text();
+            $.ajax({
+                url: '@Url.Action("GenerateCode")',
+                  
+                type: "GET",
+                success: function (code) {
+                 
+                    console.log(code);
+                    var url = '@Url.Action("Index", "Proposal", new { Id = Model.Id }, "http")';
+                    if (code != "") {
+                        url = url 
+                    }
+                    var obj = {
+                        method: 'feed',
+                        link: url,
+                        picture: '',
+                        name: 'The proposal ' + data + ' has reached '+ vote + ' votes!!',
+                        caption: 'Like this? Get on board and vote for it! Awesome prizes to be won! + ' + 'at ' + TwitterURLReferrer,
+                        redirect_uri: url
+                         
+                    };
+                    function callback(response) {  
+                        console.log(response['id']);
+                    }
+
+                    FB.ui(obj, callback); 
+                   
+                    
+                    
+                }
+
+            });
+          
+                 //console.log($(this).parent().parent().find('h3 span').text());
+     
+
+             });
+  
+
+      
+       
+
+       
+
+        $('#ShowComments').on('hide', function () {
+            $(this).css('height', 'auto');
+            $(this).parent().find('#button').text("Show Comments")
+
+        });
+
+        $('#button2').click(function () {
+        
+            var $container = $(this);
+
+            $container.parent().find('#ShowComments').collapse('toggle');
+
+
+
+        });
+
+        
+
+        
+        
+      
+     
+        //end events
+       
+        //functions
+        
+      
+
+        function TweetToFeed(location) {
+            $.ajax({
+                url: location,
+                type: "POST",
+                
+                statusCode: {
+                    200: function () {
+                        console.log("Tweeted to Wall Successfully");
+                    },
+                    400:function(){
+                        console.log("An error has occured");
+                    },
+                    409:function(){
+                        console.log("An Api error has occured");
+                    }
+
+                }
+            });
+        }
+
+        function getURLParam(name,URL) {
+            // get query string part of url into its own variable
+            var url = URL;
+            var query_string = url.split("?");
+
+            // make array of all name/value pairs in query string
+            var params = query_string[1].split("&");
+
+            // loop through the parameters
+            var i = 0;
+            while (i < params.length) {
+                // compare param name against arg passed in
+                var param_item = params[i].split("=");
+                if (param_item[0] == name) {
+                    // if they match, return the value
+                    return param_item[1];
+                }
+                i++;
+            }
+            return "";
+        }
+
+        function GetURLReferrer(){
+          
+        
+                $.ajax({
+                    url: '@Url.Action("GenerateCode")',
+                  
+                type: "GET",
+                success: function (code) {
+                 
+                 
+         
+                   
+                   
+                    if (code != "") {
+                        TwitterURLReferrer =  '@Url.Action("Index", "Proposal", new { Id = Model.Id }, "http")' +'?ccf=' + code;
+                    }else {
+                        TwitterURLReferrer =  '@Url.Action("Index", "Proposal", new { Id = Model.Id }, "http")';
+                    }
+
+                    $('#twitterbutton').attr("href", $('#twitterbutton').attr("href") + TwitterURLReferrer);
+                 
+                    $('#twitterbutton').prepend('   <img src=@Url.Content("~/Content/images/twitter-bird-light-bgs.png") width="25px" height="25px"/>');
+                    //console.log($(".twitter").attr("href"));
+                  }
+
+            });
+     
+        }
+
+        function GetRankings() {
+            $.ajax({
+                url: '@Url.RouteUrl("DefaultApi", new { httproute = "", controller = "Proposals" })' + '/' + @Model.Id,
+                  
+                    type: "GET",
+                    success: function (data) {
+                        console.log(data);
+                        //console.log(Rankings({Ranks:data}));
+                        $('#Rankings').html((Rankings({Ranks:data})));
+                    }
+
+                });
+        };
+
+        function GetSimilarProposals(){
+            $.ajax({
+                url: '@Url.Action("GetSimilarProposals")',
+                data: {Artistname : '@Model.Artist'},
+                type: "GET",
+                success: function (data) {
+                    console.log(data);
+               
+                    //console.log(similarproposals({Proposals:data}));
+                    $('#similarproposals').html(similarproposals({Proposals:data}));
+                    //console.log(Rankings({Ranks:data}));
+                     
+                }
+
+            });
+        };
+
+        function PosttoFeed(location) {
+            $.ajax({
+                url: location,
+                type: "POST",
+                
+                statusCode: {
+                    201: function () {
+                        console.log("Posted to Wall Successfully");
+                    },
+                    404: function () {
+                        console.log("Post in Facebook was not Found. The corresponding files in database were deleted");
+                    },
+                    400: function () {
+                        console.log("Could not figure out the type of error");
+                    },
+                    502: function () {
+                        console.log("Token Expired");
+                          @*  window.location = '@Url.Action("RunScheduler", "FacebookScheduler",null)';*@
+                      }
+
+                  }
+            });
+         }
+        
+     
+        //end functions
+    </script>        
+
+    }

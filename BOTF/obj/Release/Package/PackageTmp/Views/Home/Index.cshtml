@@ -1,0 +1,959 @@
+﻿@model BOTF.ModelView.User
+@{
+    ViewBag.Title = "Home Page";
+}
+
+@section Navbar
+{
+    <div id="navigation">
+         <div  class="navbar navbar-inverse" >
+        <div class="navbar-inner" style="height:30px;">
+        
+                <a class="btn btn-navbar" data-toggle="collapse" data-target=".subnav-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </a>
+                <a class="brand" href="#">BOTF</a>
+                <div class="nav-collapse subnav-collapse">
+                    <ul class="nav">
+                       
+
+
+
+                        @{
+                            if (Model.Name != null)
+                            {
+                            <li><a data-toggle="modal" data-target="#myModal">Invite TT Friends</a></li>
+                            <div id="numberofvotes">@Model.RemainingVotes</div>
+                             <li> <a  onclick="sendRequestInvite()">Invite FB Friends</a></li>
+                            } 
+                        }
+                      
+                         <li><a class="filter">Filter</a></li>
+
+                    </ul>
+                   
+                 
+                  
+                      
+                </div>
+                <!-- /.nav-collapse -->
+         
+        </div>
+        <!-- /navbar-inner -->
+    </div>
+      <div  id="proposalselection">
+         <p>I want <input id="artist" type="text"> at <input id="venue" type="text"  data-provide="typeahead">  @if (Model.Name != null)
+                                                                                                                { <div id = "proposaltext"> Proposals Left</div>}
+         
+         @{
+             if (Model.Name != null)
+             {
+                   
+                   <div id="remainingpost">@Model.RemainingProposals</div>  
+
+                    <input type="button" class="btn" id="propose" data-loading-text="Loading ..." value="Propose"/>
+             }
+          }
+         
+   </div>
+        </div>
+}
+
+
+
+@section scripts
+{
+   
+     @Scripts.Render("~/Scripts/bootstrap.min.js")
+  
+    @Scripts.Render("~/Scripts/jquery.timeago.js")
+   @Scripts.Render("~/Scripts/jquery.isotope.min.js")
+   @Scripts.Render("~/Scripts/jquery.infinitescroll.min.js")
+  @Scripts.Render("~/Scripts/boostrap-typeahead.js")
+  @Scripts.Render("~/Scripts/jquery.signalR-0.5.3.min.js")
+ <script type="text/javascript" src="@Url.Content("~/signalr/hubs")"></script>
+ 
+    <script  id="History_template" type="text/x-handlebars-template">
+        {{#each Histories.$values}} 
+           
+        <div  id= "proposals" >
+
+          <a href= '@Url.Content("~/Proposal/Index?Id={{Id}}")' style="margin:0px;padding:0px;"> <img  href='@Url.Content("~/Proposals/Index?Id={{Id}}")' id = "proposalimage"src='{{Image}}'/>  </a>
+       
+         
+          <div id="clear"></div>
+           <div>{{Artist}} @@ {{Venue}}</div>
+          {{#each Comments}}
+           
+           <div style="color:Blue;">{{this}} </div>
+           
+          {{/each}}
+           <div id = "clear"></div>
+
+
+           <div>Votes: <span id="sVotes-{{Id}}">{{Votes}}</span></div>
+           <div id="votenumber" style="display: none;">{{Votes}}</div>
+           <div>Proposed By: <a href="/Profile/Index/{{ProposedBy}}">{{Owner}} </a></div>
+        
+          
+        </div>
+        
+        {{/each}}
+        
+    </script>
+  
+     <script  id="VoteHistory_template" type="text/x-handlebars-template">
+      {{#each VoteHistory.$values}}
+        <div  id= "histories" class="span4">
+          <img id = "profileimage"src='{{UserImage}}'  height="30px" width="30px"/> 
+           <p style="text-align:center;font-size:small;"> <a href="/Profile/Index/{{UserId}}">{{Username}} </a>  voted   <a href="/Proposal/Index/{{ProposalId}}">{{Artist}}  @@ {{Venue}}  </a></p>
+             <div id = "clear"></div>
+          <div id="votenumber" style="display: none;">{{Vote}}</div>
+           @{
+               if (Model.Name != null)
+               {
+                       
+                       <input id="commentinput" type="text" ></input>
+                        <button id="comment" class="btn" data-proposalid={{ProposalId}}>Go</button>
+                         <a  id="button" class="accordion-toggle"  >Comments</a>
+                         <div id="ShowComments" class="collapse" data-proposalid={{ProposalId}} > Loading </div>
+               }
+            }
+               
+         
+        </div>
+      {{/each}}
+         
+    </script>    
+
+     <script  id="CommentsHistory" type="text/x-handlebars-template">
+      
+        {{#each Comments.$values}}
+          
+            <ul class="unstyled">
+              <li>{{Body}}</li>
+                
+                {{#if isFacebook}}
+                    <img src='@Url.Content("~/Content/images/facebook-icon.png")'height="25px" width="25px"/>
+                   
+                {{/if}}
+               <abbr class="timeago" title='{{DateCreated}}' style="text-align:center;font-size:smaller;">{{DateCreated}}</abbr> <span style="text-align:center;font-size:smaller;{{#if Artist}}color:red;{{/if}} ">by {{CreatedBy}}</span>
+               <div id = "clear" </div>
+               
+                {{#if Id }}
+                      
+                        
+                        
+                            <a href='#' id="deletecomment" data-Id = '{{Id}}' data-isFacebook='{{isFacebook}}'>Delete</a>
+                        
+                     
+                  
+                   
+                {{/if}}
+            <hr />
+           </ul>
+        {{/each}}
+     
+     </script>
+
+    <script  id="Friends" type="text/x-handlebars-template">
+           
+         <div>
+         
+          {{#each friends.$values}}
+           <a href='@Url.Content("~/Profile/Index/{{this.UserId}}")'><img id="profilePics" src='{{this.Image}}' alt='{{this.Name}}' data-Id='{{this.Id}}'/></a>
+              
+                  
+              
+               
+           {{/each}}    
+       </div>
+     </script>
+  
+     <script  id="FriendsInvite" type="text/x-handlebars-template">
+  
+         <div>
+           <form action='@Url.Action("TweetRequest", "Home")' method="post">
+         <input class="btn"  type="submit" value="Send Request" >
+         <div id="clear"></div>
+           <hr />
+          {{#each friends.$values}}
+                   
+                    <input id="checkboxFriend"  type="checkbox" name="Id" value='{{this.Id}}'></input>
+                 <img id="profilePics" src='{{this.Image}}' alt='{{Name}}' data-Id='{{this.Id}}'/>
+                
+           {{/each}}
+        </form
+     
+       </div>
+     </script>
+    
+    
+  
+     <script  id="ContentScroller" type="text/x-handlebars-template">
+     
+            
+            <div id="myCarousel" class="carousel slide">
+                <div class="carousel-inner">
+                     {{#each Contents.$values}}
+                          <div class="item">
+                            <img src={{this.Image}} alt="" >
+                            <div class="carousel-caption">
+                              <h4>{{this.Title}}</h4>
+                              <p>{{this.Description}}</p>
+                              <p> <a href = {{Link}}>{{Link}}</a></p>
+                            </div>
+       
+                          </div>
+                     {{/each}}
+
+                      
+               
+              </div>
+                 <a class="left carousel-control" href="#myCarousel" data-slide="prev">‹</a>
+                <a class="right carousel-control" href="#myCarousel" data-slide="next">›</a>
+         </div>
+     
+     </script>
+    
+    
+     <script  id="Genres" type="text/x-handlebars-template">
+
+     <table class="table">
+         
+        <thead>
+            <tr>
+                <th>Types</th>
+            </tr>
+        </thead>
+        <tbody>
+           {{#each Genres}}
+            <tr>
+                <td><a href='/home/Index?Filter={{this}}' </a>{{this}}</td>
+            </tr>
+          {{/each}}
+            <tr>
+                <td><a href='/home/Index' </a>All</td>
+            </tr>
+        </tbody>
+          
+    </table>
+            
+        
+        
+       
+     
+     </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            FB.init({ appId: "413005845422605", status: true, cookie: true });
+            $('#Rest').isotope({
+                itemSelector: '#proposals',
+                masonry: {
+                    columnWidth: 12
+                }
+
+            });
+            $('#friends').isotope({
+                itemSelector: 'a',
+                masonry: {
+                    columnWidth: 5
+                }
+
+            });
+
+          
+            GetFriends();
+            GetSliderContents();
+            SelectTenRecentProposals();
+            GetRecentVoters();
+            GetRecentPicks();
+            handleScroll();
+            var proposalHistory = $("#History_template").html();
+            ProposalsTemplate = Handlebars.compile(proposalHistory);
+            var voteHistory = $("#VoteHistory_template").html();
+            VoteHistoryTemplate = Handlebars.compile(voteHistory);
+            var commentsDropdown = $("#CommentsHistory").html();
+            comments = Handlebars.compile(commentsDropdown);
+            var Friends = $("#Friends").html();
+            friends = Handlebars.compile(Friends);
+            var Lists = $("#ContentScroller").html();
+            Contents = Handlebars.compile(Lists);
+            var FriendsInvite = $("#FriendsInvite").html();
+            Invite = Handlebars.compile(FriendsInvite);
+            var Genres = $("#Genres").html();
+            genres = Handlebars.compile(Genres);
+            //singalR
+            var connection = $.connection.messagesHub;
+            connection.updateVoters = function () {
+                GetRecentVoters();
+                SelectTenRecentProposals();
+            }
+            $.connection.hub.start({ transport: ['longPolling'] });
+
+           var skip = 0;
+           var count = 5;
+
+
+           $(window).data('ajaxready', true).scroll(function (e) {
+               if ($(window).data('ajaxready') == false) return;
+
+               if ($(window).scrollTop() >= ($(document).height() - $(window).height())) {
+                 
+                   $(window).data('ajaxready', false);
+                   $.ajax({
+                       url: '@Url.RouteUrl("DefaultApi", new { httproute = "", controller = "Proposals" })' + '?count=' + count + "&skip=" + skip + "&Filter=" + '@ViewBag.Filter' + '&State=' + true,
+                       type: "GET",
+                       success: function (data) {
+                           if (data.$values != "") {
+
+                               $Elements = $(ProposalsTemplate({ Histories: data }));
+
+
+                               $('#Rest').append($Elements).isotope('appended', $Elements);
+                               $('#Rest>#proposals').css({ 'width': '280px', 'height': '350' });
+                               $('#Rest>#proposals').find('#proposalimage').css({ 'width': '300px', 'height': '250px', ' margin-bottom': '5px' });
+                               $('#Rest').isotope('reLayout');
+                               skip = data.$values.length + skip;
+                               console.log(skip);
+                           } 
+                           $(window).data('ajaxready', true);
+                       }
+                   });
+               }
+           });
+
+
+          
+
+
+            $('#deletecomment').live('click', function () {
+
+                var id = $(this).attr('data-id');
+                var isFacebook = $(this).attr('data-isFacebook');
+                var proposalId = $(this).parent().parent().parent().attr('data-proposalid');
+                //console.log($(this).parent().parent().parent().attr('data-proposalid'));
+                $.ajax({
+                    url: '@Url.RouteUrl("DefaultApi", new { httproute = "", controller = "Comments" })',
+                data: { Id: id, PostId: proposalId, isFacebook: isFacebook },
+                type: "DELETE",
+
+                statusCode: {
+                    200: function () {
+                        console.log("Comment Deleted Successfully");
+                        connection.updateCommentHistory();
+                    },
+                    404: function () {
+                        console.log("Comment in Facebook was not Found. The corresponding files in database were deleted");
+                    },
+                    400: function () {
+                        console.log("Could not figure out the type of error");
+                    },
+                    502: function () {
+                        console.log("Token Expired");
+                         @*window.location = '@Url.Action("InitiateTokenRest", "Account",null)';*@
+                     }
+
+                 }
+
+            });
+             });
+            $('#comment').live('click', function () {
+                connection.updateCommentHistory();
+                //console.log($(this).parent().find('#commentinput').val());
+                var commentBody = $(this).parent().find('#commentinput').val();
+                var proposalId = $(this).attr('data-proposalid');
+                console.log(proposalId + " " + commentBody);
+                $.ajax({
+                    url: '@Url.RouteUrl("DefaultApi", new { httproute = "", controller = "Comments" })',
+                type: "POST",
+                data: { Id: proposalId, Body: commentBody },
+                statusCode: {
+                    200: function () {
+                        console.log("Comment Created Successfully");
+                     
+                    },
+                    404: function () {
+                        console.log("Post in Facebook was not Found. The corresponding files in database were deleted");
+                    },
+                    400: function () {
+                        console.log("Could not figure out the type of error");
+                    },
+                    502: function () {
+                        console.log("Token Expired");
+                        //window.location = '@Url.Action("RunScheduler", "FacebookScheduler", null)';
+                         @*   //window.location = '@Url.Action("InitiateTokenRest", "Account",null)';*@
+                     }
+
+                 }
+
+            });
+             });
+       
+            //ContentScroller
+
+        });
+
+
+            function SelectTenRecentProposals() {
+                $.ajax({
+                    url: '@Url.RouteUrl("DefaultApi", new { httproute = "", controller = "Proposals" })' + '?count=' + 12 + "&skip=" + 0 + "&Filter=" + '@ViewBag.Filter' + '&State=false',
+                    type: "GET",
+                    success: function (data) {
+                       
+                        $('#AllProposals').isotope('destroy');
+                        $('#AllProposals').html(ProposalsTemplate({ Histories: data }));
+                        $('#AllProposals>#proposals').css({ 'width': '188px', 'height': '330' });
+                        $('#AllProposals>#proposals').find('#proposalimage').css({ 'width': '200px', 'height': '200px', ' margin-bottom': '5px' });
+                        $('#AllProposals').isotope({
+                            itemSelector: '#proposals',
+                            masonry: {
+                                columnWidth: 12
+                            }
+
+                        });
+
+                      
+                       
+                    
+                        //$('#AllProposals').removeClass('no-transition').isotope();
+                        //$('#AllProposals').html(ProposalsTemplate({ Histories: data })).isotope();
+                        //$('#AllProposals').isotope('insert', $(ProposalsTemplate({ Histories: data })),true);
+             
+                
+                    },
+                    statusCode: {
+                        200: function () {
+                            console.log("Proposal Selected fine");
+                        }
+
+
+
+                    }
+
+                });
+
+            };
+
+        
+
+
+
+
+     
+        //end funtions
+
+        //events
+       
+      
+
+
+       
+
+        $('.filter').click(function () {
+            GetGenres();
+         
+        });
+
+   
+
+        $('#artist').typeahead(
+             
+      {
+       
+          source: function (typeahead, query) {
+              $("#ajaxload").show();
+              $.ajax({
+                  url: '@(Url.Action("GetArtistsApi"))',
+                    data: { artist: $("#artist").val() },
+                    success: function (data) {
+                        typeahead.process(data);
+                        $("#ajaxload").hide();
+                    }
+                })
+            }
+        });
+
+        $('#venue').typeahead(
+        {
+            source: function (typeahead, query) {
+                $("#ajaxload").show();
+                var venuename = $("#venue").val();
+                $.ajax({
+                    url: '@(Url.Action("GetVenuesApi"))',
+                    data: { venue: $("#venue").val() },
+                    success: function (data) {
+                        typeahead.process(data);
+                        $("#ajaxload").hide();
+                    }
+                })
+
+            }
+
+        });
+
+       
+
+        $('#button').live('click', function () {
+            var $container = $(this);
+            $container.parent().find('#ShowComments').collapse('toggle');
+
+
+
+        });
+
+        $('#ShowComments').live('show', function () {
+
+            var $container = $(this);
+            $.ajax({
+                url: '@Url.RouteUrl("DefaultApi", new { httproute = "", controller = "Comments" })',
+                data: { Id: $(this).attr('data-proposalid') },
+                type: "GET",
+                success: function (data) {
+                   
+                    //console.log(comments({ Comments: data }));
+                    if (data.$values != "") {
+                        
+                        $container.parent().find('#ShowComments').html(comments({ Comments: data }));
+                        $("abbr.timeago").timeago();
+                    } else {
+                        $container.parent().find('#ShowComments').text("No comments available");
+                    }
+                  
+                   
+                }
+
+            });
+            
+            
+
+           
+
+         });
+       
+
+        $('.Vote').live('click', function () {
+         
+            var $container = $(this).parent().find('span');
+            
+            $.ajax({
+                url: '@Url.RouteUrl("DefaultApi", new { httproute = "", controller = "Proposals" })' + '/' + $(this).attr('data-proposalid'),
+                type: "PUT",
+                complete: function (response) {
+                  
+                  
+                    var votes = $container.text();
+                    votes++;
+                    $container.text(votes);
+                    votes = $('#numberofvotes').text();
+                    votes--;
+                    $('#numberofvotes').text(votes);
+                    console.log("Location: " + response.getResponseHeader("Location"));
+                    GetRecentVoters();
+                    SelectTenRecentProposals();
+                    if (response.getResponseHeader("Location")) {
+                        PosttoFeed(response.getResponseHeader("Location"));
+                        var ProposalId = getURLParam("Id", response.getResponseHeader("Location"));
+                        TweetToFeed('@Url.RouteUrl("DefaultApi", new { httproute = "", controller = "TwitterProposal" })' + '?Id=' + ProposalId + '&ArtistPost=true')
+                    }
+                    
+                },
+                statusCode: {
+                    201: function () {
+                        console.log("Proposal Created");
+                    },
+                    403: function () {
+                        console.log("You have reached your vote limit");
+                        alert("You have reached your vote limit. Consider sharing a proposal");
+                    }
+
+
+
+                }
+
+            });
+
+        });
+
+            $('#propose').click(function () {
+              
+
+                $.ajax({
+                    url: '@Url.RouteUrl("DefaultApi", new { httproute = "", controller = "Proposals" })',
+                     type: "POST",
+                     data: { artist: $("#artist").val(), venue: $("#venue").val() },
+                     complete: function (response) {
+                     
+                         if (response.status == 201) {
+                             console.log("Location: " + response.getResponseHeader("Location"));
+                             SelectTenRecentProposals();
+                             var proposals = $('#remainingpost').text();
+                             proposals--;
+                             $('#remainingpost').text(proposals);
+                             //console.log(getURLParam("Id", response.getResponseHeader("Location")));
+                             var ProposalId = getURLParam("Id", response.getResponseHeader("Location"));
+
+                             PosttoFeed(response.getResponseHeader("Location"));
+                             TweetToFeed('@Url.RouteUrl("DefaultApi", new { httproute = "", controller = "TwitterProposal" })' + '?Id=' + ProposalId + '&ArtistPost=false');
+                         }
+                        
+                     },
+                     statusCode: {
+                         201: function (response) {
+                             console.log("Proposal Created");
+                         },
+                         403: function () {
+                             console.log("You have reached your proposal limit");
+                             alert("You have reached your proposal limit");
+                         },
+                         400: function () {
+                             alert("bad request");
+                         },
+                         409: function () {
+                             alert("A similar Proposal Already Exists. Please Try again");
+                         }
+
+
+
+
+                     }
+
+                 });
+
+            });
+   
+
+        $('#myModal').bind('show', function () {
+          
+          
+            $.ajax({
+                url: '@Url.RouteUrl("DefaultApi", new { httproute = "", controller = "TwitterProposal" })',
+                 type: "GET",
+                 data: { invite: true },
+                 success: function (data) {
+                     console.log(data);
+                     if (data.$values != "") {
+                         $('#content').html(Invite({ friends: data }));
+                     } else {
+                         $('#content').text("Not Available");
+                     }
+                     
+                         
+                     }
+
+                 
+
+             });
+
+
+       });
+
+        //events end
+
+        //functions
+
+    
+
+        function GetGenres() {
+            $.ajax({
+                url: '@Url.Action("GetGenres")',
+                type: "GET",
+
+                success: function (data) {
+                    
+                    //console.log();
+                    $('#filterGenre').html(genres({ Genres: data }));
+                }
+            });
+        }
+
+        function GetFriends() {
+            var facebookFriends = GetFacebookFriends();
+            var twitterFriends = GetTwitterFriends();
+
+        }
+
+        function GetFacebookFriends() {
+            $.ajax({
+                url: '@Url.RouteUrl("DefaultApi", new { httproute = "", controller = "FacebookProposal" })',
+                type: "GET",
+              
+                success: function (data) {
+                    //console.log(friends({ friends: data }));
+                    $Elements = $(friends({ friends: data}));
+
+                    $('#friends').append($Elements).isotope('appended', $Elements);
+                    
+                    return data;
+                }
+               
+            });
+            return "";
+        }
+
+        function GetTwitterFriends() {
+            $.ajax({
+                url: '@Url.RouteUrl("DefaultApi", new { httproute = "", controller = "TwitterProposal" })',
+                  type: "GET",
+
+                  success: function (data) {
+                  
+                      $Elements = $(friends({ friends: data }));
+
+                      $('#friends').append($Elements).isotope('appended', $Elements);
+                      return data;
+
+                  }
+
+              });
+              return "";
+        }
+
+
+        function GetSliderContents() {
+            $.ajax({
+                url: '@Url.RouteUrl("DefaultApi", new { httproute = "", controller = "Slider" })',
+                 type: "GET",
+                 success: function (data) {
+                     console.log(data);
+                     
+                     //console.log(Contents({ Contents: data }));
+                     if (data.$values != "") {
+                         $('#ContentsList').html(Contents({ Contents: data }));
+                         $('#myCarousel').carousel('cycle');
+                     }
+                   
+                   
+                  
+                 }
+
+
+                 
+
+             });
+        }
+
+
+        function TweetToFeed(location) {
+            $.ajax({
+                url: location,
+                type: "POST",
+                
+                statusCode: {
+                    200: function () {
+                        console.log("Tweeted to Wall Successfully");
+                    },
+                    400:function(){
+                        console.log("An error has occured");
+                    },
+                    409:function(){
+                        console.log("An Api error has occured");
+                    }
+
+                  }
+             });
+        }
+        
+
+        function PosttoFeed(location) {
+            $.ajax({
+                url: location,
+                  type: "POST",
+                
+                  statusCode: {
+                      201: function () {
+                          console.log("Posted to Wall Successfully");
+                      },
+                      404: function () {
+                          console.log("Post in Facebook was not Found. The corresponding files in database were deleted");
+                      },
+                      400: function () {
+                          console.log("Could not figure out the type of error");
+                      },
+                      502: function () {
+                          console.log("Token Expired");
+                        @*  window.location = '@Url.Action("RunScheduler", "FacebookScheduler",null)';*@
+                     }
+
+                  }
+              });
+        }
+
+        function GetRecentVoters() {
+            $.ajax({
+                url: '@Url.RouteUrl("DefaultApi", new { httproute = "", controller = "VoteHistory" })',
+                      type: "GET",
+                      success: function (data) {
+                          console.log(data);
+                          //console.log(VoteHistoryTemplate({ VoteHistory: data }));
+                          $('#AllVoteHistory').html(VoteHistoryTemplate({ VoteHistory: data }));
+                      },
+                      statusCode: {
+                          200: function () {
+                              console.log("Proposal Selected fine");
+                          }
+
+
+
+                      }
+
+            });
+         
+        };
+
+       
+        function GetRecentPicks() {
+            $.ajax({
+                url: '@Url.RouteUrl("DefaultApi", new { httproute = "", controller = "StaffPicks" })',
+                type: "GET",
+                data:{Filter :'@ViewBag.Filter'},
+                success: function (data) {
+                    console.log(data);
+                    $('#Picks').isotope('destroy');
+                    $('#Picks').html(ProposalsTemplate({ Histories: data }));
+                    $('#Picks>#proposals').css({ 'width': '280px', 'height':'350' });
+                  
+                    $('#Picks').isotope({
+                        itemSelector: '#proposals',
+                        masonry: {
+                            columnWidth: 12
+                           
+                        }
+                        
+
+                    });
+                    $('#Picks>#proposals').find('#proposalimage').css({ 'width': '300px', 'height': '250px', ' margin-bottom': '5px' });
+                   
+                }
+
+
+
+            });
+
+        }
+
+        function handleScroll() {
+
+            // check that this is a relatively modern browser
+            if (window.XMLHttpRequest) {
+
+                // determine the distance scrolled down the page
+                var offset = window.pageYOffset
+                           ? window.pageYOffset
+                           : document.documentElement.scrollTop;
+
+                // set the appropriate class on the navigation
+                document.getElementById('navigation').className =
+                    (offset > 104 ? 'fixed' : '');
+
+            }
+
+        }
+
+        function getURLParam(name,URL) {
+            // get query string part of url into its own variable
+            var url = URL;
+            var query_string = url.split("?");
+
+            // make array of all name/value pairs in query string
+            var params = query_string[1].split("&");
+
+            // loop through the parameters
+            var i = 0;
+            while (i < params.length) {
+                // compare param name against arg passed in
+                var param_item = params[i].split("=");
+                if (param_item[0] == name) {
+                    // if they match, return the value
+                    return param_item[1];
+                }
+                i++;
+            }
+            return "";
+        }
+
+        // add the scroll event listener
+        if (window.addEventListener) {
+            window.addEventListener('scroll', handleScroll, false);
+        } else {
+            window.attachEvent('onscroll', handleScroll);
+        };
+        //functions end
+  
+        
+           
+
+
+    </script>
+}
+<div class="modal" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h3>Friends</h3>
+        </div>
+        <div class="modal-body">
+            
+            <div id="content">Loading...</div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+          
+        </div>
+    </div>
+
+<div class="data">
+    <div class="row">
+       <div class="span12">
+           <div class="span2">  <div  id="filterGenre"></div></div>
+            <div class="span8">
+                
+                  <div id="ContentsList" ></div>
+
+               
+
+            </div>
+            <div class="span2"></div>
+          
+        
+
+       </div>
+        <div class="span8">
+           
+            
+              <div id="clear"></div>
+            <h4>Friends<h6>Need to have external login</h6></h4>
+             <div id="friends"></div>
+          
+                    <h4>Top 12</h4>
+                    <div id="AllProposals"></div>
+            <div class="row">
+                <div class="span12">
+                    
+                  
+                    <h4>Staff Picks</h4>
+                    <div id="Picks"></div>
+                    <div id="clear"></div>
+                    <h4>The rest</h4>
+                    <div id="Rest"></div>
+
+                </div>
+                
+
+            </div>
+            
+           
+        </div>
+        <div class="span4">
+            
+            <div id="AllVoteHistory"></div>
+      
+            
+ 
+        </div>
+    </div>
+
+</div>
+

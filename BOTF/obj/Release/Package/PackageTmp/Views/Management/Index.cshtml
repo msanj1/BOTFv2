@@ -1,0 +1,150 @@
+﻿@model IEnumerable<BOTF.Models.Proposal>
+@{
+    ViewBag.Title = "Index";
+}
+
+
+<div class="row">
+    <div class="span2">
+
+        <ul class="nav nav-tabs nav-stacked">
+              <li class="active"><a href='@Url.Action("Index","Management")'>Staff Picks</a></li>
+              <li><a href='@Url.Action("SliderContent","Management")'>Slider Contents</a></li>
+             
+        </ul>
+    </div>
+    <div class="span10">
+
+        <h3>Proposals</h3>
+
+        <form action="@Url.Action("Index")">
+            <input type="text" placeholder="Search By Artist/Genre/Venue" name="Query">
+            <button id="searchbutton" class="btn" type="submit">Search</button>
+        </form>
+
+
+        <div class="pre-scrollable" style="width: 600px;">
+
+            @foreach (var item in Model)
+            {
+
+                string text = @item.Artist + " @ " + @item.Venue + " with " + @item.Votes + " votes";
+                <pre style="height: 10px;">
+          
+                <div id="All"> @Html.ActionLink(text, "Index", "Proposal", new { @item.Id }, null)   <span><a id="Add" data-Id='@item.Id'>Add</a></span></div>
+           
+                </pre>
+         
+           
+            
+       
+         }
+
+
+
+        </div>
+
+
+        <h3>List</h3>
+        <div id="staff_list"></div>
+
+
+
+    </div>
+
+</div>
+
+
+
+
+@section scripts
+{
+    
+
+    
+     <script  id="Staff_Picks" type="text/x-handlebars-template">
+         <div class ="pre-scrollable" style="width:700px;" >
+           {{#each picks.$values}}
+                <pre style="height:20px;">
+                <div id="List">{{this.Artist}} @@ {{this.Venue}} with {{this.Votes}} Added on: {{DateCreated}}<span><a id="Remove" data-Id={{PickId}}>Remove</a></span></div>
+                </pre> 
+          {{/each}}
+         </div>
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+          
+            var picks = $("#Staff_Picks").html();
+            staff_picks = Handlebars.compile(picks);
+            RefreshList();
+        });
+
+        //functions
+        function RefreshList() {
+            $.ajax({
+                url: '@Url.RouteUrl("DefaultApi", new { httproute = "", controller = "StaffPicks" })',
+                type: "GET",
+                success: function (data) {
+                    console.log(data);
+                    //console.log(staff_picks({ picks: data }));
+                    $('#staff_list').html(staff_picks({ picks: data }));
+                }
+                  
+                   
+
+               });
+        }
+        //end functions
+
+        //events
+        $('#Add').live("click", function () {
+            console.log($(this).attr('data-Id'));
+            $.ajax({
+                url: '@Url.RouteUrl("DefaultApi", new { httproute = "", controller = "StaffPicks" })',
+                   type: "PUT",
+                   data: { Id: $(this).attr('data-Id') },
+                   statusCode: {
+                       200: function () {
+                           console.log("Added Successfully");
+                           RefreshList();
+                       },
+                       204: function () {
+                           console.log("Id does not exist");
+                       },
+                       400: function () {
+                           console.log("Bad Request");
+                       }
+
+                   }
+
+               });
+        });
+
+        $('#Remove').live("click", function () {
+            $.ajax({
+                url: '@Url.RouteUrl("DefaultApi", new { httproute = "", controller = "StaffPicks" })',
+                 type: "DELETE",
+                 data: { Id: $(this).attr('data-Id') },
+                 statusCode: {
+                     200: function () {
+                         console.log("Removed Successfully");
+                         RefreshList();
+                     },
+                     204: function () {
+                         console.log("Id does not exist");
+                     },
+                     400: function () {
+                         console.log("Bad Request");
+                     }
+                 }
+
+             });
+        });
+      
+         
+       
+        //end events
+    </script>
+}
+

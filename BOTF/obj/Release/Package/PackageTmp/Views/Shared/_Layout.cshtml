@@ -1,0 +1,77 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>@ViewBag.Title - My ASP.NET MVC Application</title>
+        <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+        <meta name="viewport" content="width=device-width" />
+        @Styles.Render("~/Content/css")
+         @Styles.Render("~/Content/bootstrap.css")
+         
+        @Scripts.Render("~/bundles/modernizr")
+         @Scripts.Render("~/bundles/modernizr")
+           @Styles.Render("~/Content/bootstrap-responsive.css")
+       @Styles.Render("~/Content/styles2.css")
+        @Scripts.Render("~/Scripts/jquery-1.7.1.js")
+         @Scripts.Render("~/Scripts/handlebars.js")
+        @Scripts.Render("http://connect.facebook.net/en_US/all.js")
+          @Scripts.Render("~/Scripts/Facebook.js")
+    </head>
+    
+    <body>
+        <header>
+            <div class="content-wrapper">
+                <div class="float-left">
+                    <p class="site-title">@Html.ActionLink("Battle Of the Fans", "Index", "Home")</p>
+                </div>
+                <div class="float-right">
+                    <section id="login">
+                        @Html.Partial("_LoginPartial")
+                    </section>
+                    <nav>
+                        <ul id="menu">
+                            <li>@Html.ActionLink("Home", "Index", "Home")</li>
+                           
+                            @{
+                                try
+                                {
+                                    if ( Roles.IsUserInRole("Admin"))
+                                    {
+                                         <li>@Html.ActionLink("Dashboard", "Index", "Management")</li>
+                                    }
+                                }
+                                catch (Exception)
+                                {
+                                    
+                                    
+                                }
+                                
+                               
+                            }
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </header>
+        <div id="body">
+
+            <div class="container">
+
+                
+                <div class="row ">
+                    <div class="span12">
+                        @RenderSection("Navbar", false)
+                       
+                              @RenderBody()
+
+                        
+                      
+                    </div>
+                </div>
+            </div>
+
+        @Scripts.Render("~/bundles/jquery")
+    
+        @RenderSection("scripts", required: false)
+    </body>
+</html>

@@ -1,0 +1,96 @@
+﻿@model BOTF.Models.RegisterModel
+@{
+    ViewBag.Title = "Register";
+}
+
+<hgroup class="title">
+    <h1>@ViewBag.Title.</h1>
+    <h2>Create a new account.</h2>
+</hgroup>
+
+@using (Html.BeginForm("Register", "Account", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary()
+
+    <fieldset>
+        <legend>Registration Form</legend>
+        <ol>
+            <li>
+                @Html.LabelFor(m => m.UserName)
+                @Html.TextBoxFor(m => m.UserName)
+            </li>
+            <li>
+                @Html.LabelFor(m => m.Password)
+                @Html.PasswordFor(m => m.Password)
+            </li>
+            <li>
+                @Html.LabelFor(m => m.ConfirmPassword)
+                @Html.PasswordFor(m => m.ConfirmPassword)
+            </li>
+             <li>
+                @Html.LabelFor(m => m.Name)
+                @Html.TextBoxFor(m => m.Name)
+            </li>
+            <li>
+                @Html.LabelFor(m => m.Email)
+                @Html.TextBoxFor(m => m.Email)
+            </li>
+             <li>
+                @Html.LabelFor(m => m.Image)
+                <div class="controls">
+                                <input type="file" class="input-xlarge" name="Image" onchange="upload_img(this);">
+                                 <img id="img_id" src="#" alt="" class="img-rounded" width=50px height=50px>
+                </div>
+            </li>
+        </ol>
+        <input type="submit" value="Register" />
+    </fieldset>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/Scripts/bootstrap.min")
+
+    <script type="text/javascript">
+
+        function upload_img(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    $('#img_id').attr('src', e.target.result).css("visibility", "visible");
+                }
+
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        $(document).ready(function () {
+
+
+            $("#username").keyup(function () {
+                var name = $("#username").val(); //Value entered in the text box
+                var status = $("#userstatus"); //DIV object to display the status message
+                var user = $.trim(name);
+                if (user.length > 3) {
+                    status.html("Checking....") //While our Thread works, we will show some message to indicate the progress
+                    //jQuery AJAX Post request
+                    $.post('@Url.Action("UserExist")', { username: user },
+                        function (data) {
+                            if (data == true) {
+                                status.html("<font color=green>'<b>" + name + "</b>' is available!</font>");
+                            } else {
+                                status.html("<font color=red>'<b>" + name + "</b>' is not available!</font>");
+                            }
+                        });
+        } else {
+            status.html("Need more characters...");
+        }
+    });
+});
+
+</script>
+
+
+}

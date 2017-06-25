@@ -1,0 +1,648 @@
+﻿*
+{
+  
+    padding:0px;  
+  
+}
+
+#facebooklikes
+{
+    float:right;
+    margin-top:0px;
+   overflow:hidden;
+    width:200px;
+    color:Orange;
+    text-align:center;
+   
+}
+#twitterFriend {
+    position: relative;
+    left: -30px;
+    top: 18px;
+}
+
+#facebookFriend {
+    position: relative;
+    left: -20px;
+    top: 18px;
+}
+#profilePics {
+    width:55px;
+    height:55px;
+}
+
+#imagePrefil {
+  float:right;
+  
+}
+
+.availablecontent {
+    margin-left:10px;
+  
+}
+#All {
+    position:relative;
+    top:-45px;
+}
+#List {
+    position:relative;
+    top:-20px;
+}
+#deletecomment
+{
+    position:relative;
+    top:-190px;
+    float:right;
+    color:orange;
+}
+
+
+#CommentBody {
+    position:relative;
+  font-family:Calibri;
+    width:670px;
+    height:45px;
+    top:-25px;
+    overflow:hidden;
+}
+#commentFooter {
+    position:relative;
+    top:-88px;
+    color:grey;
+}
+#inviterFB {
+    color:#999;
+    position:relative;
+    top:10px;   
+}
+#artist
+{
+    width:150px;
+    position:relative;
+    top:3px;
+}
+
+#venue
+{
+    width:100px;
+     position:relative;
+    top:3px;
+}
+#img_id
+{
+    visibility:hidden;
+}
+
+#title
+{
+    margin-left:10px;
+  
+    width:250px;
+    font-size:large;
+    display:inline-block;
+    text-align:center;
+}
+
+#filter
+{
+     border-color: Orange;
+     position:relative;
+     bottom:-3px;
+  
+}
+
+
+.LoggedIn
+{
+    position:relative;
+    left:-6px;
+}
+
+#loggedinuser
+{
+    position:relative;
+    right:-180px;
+    top: -45px;
+    margin-bottom:-30px;
+    color:Maroon;
+}
+
+.user
+{
+    position:relative;
+    right:-650px;
+}
+
+#logout
+{
+     position:relative;
+    right:-180px;
+    top:-15px;
+}
+
+#logout:hover
+{
+     cursor:pointer;
+}
+a:hover {
+    cursor:pointer;
+}
+#searchbutton {
+    position:relative;
+    top:-5px;
+}
+
+#countdown
+{
+     
+     
+    
+     
+      display:inline-block;
+      font-size:large;
+      text-align:center;
+      position:relative;
+      right:-400px;
+      top:-55px;
+}
+
+#numberofvotes
+{
+    color:Orange;
+     float:right;
+    font-size:300%;
+    position:relative;
+   right:-700px;
+   top:10px;
+    color:Orange;
+
+    
+}
+
+
+.Vote
+{
+   float:right;
+   position:relative;
+    top:-50px;
+   padding-right:4px;
+   
+}
+#profiledetails {
+    width:500px;
+    float:right;
+    position:relative;
+    left:-100px;
+    top:55px;
+}
+
+#votehistorydetails {
+    width:400px;
+}
+.HistoryVote
+{
+    position:relative;
+    top:-47px;
+    float:right;
+}
+
+#profileimage
+{
+    background-color:Silver;
+    width:40px;
+    height:40px;
+    float:left;
+    
+}
+
+#proposalimage
+{
+    background-color:Silver;
+    width:175px;
+    height:175px;
+}
+
+#proposals
+{
+ 
+ 
+   display:inline-block;
+   width:175px;    
+   overflow:hidden;
+   float:left;
+ 
+ 
+    margin-left:auto;
+    margin-right:auto;
+   
+}
+#commentinput
+{
+    height:10px;
+ border-color:Orange;
+   position:relative;
+   top:-4px;
+}
+
+#button
+{
+   float:left;
+   top:-25px;
+   
+}
+
+#ShowComments
+{
+    background-color:#FFFFCC;
+    width:290px;
+    z-index:1000;
+}
+#comment
+{
+    width:50px;
+    height:30px;
+    text-align:center;
+    float:right;
+    position:relative;
+    top:-13px;
+    
+    border-color: Orange;
+    
+}
+#ProposalImage
+{
+    width:100px;
+    height:100px;
+    position:relative;
+    right:-22px;
+    float:left;
+}
+
+#VoterImage
+{
+    position:relative;
+   top:-33px;
+   right:-10px;
+  
+}
+#Rank
+{
+    color:Orange;
+    position:relative;
+    top:-6px;
+    left:-2px;
+}
+#userdetails
+{
+    
+    width:130px;
+    display:inline-block;
+    position:relative;
+    top:-98px;
+   right:-150px;
+    padding-right:1px;
+    padding-bottom:1px;
+   overflow:hidden;
+}
+#name
+{
+    
+    width:100px;
+    height:21px;
+    overflow:hidden;
+  
+    position:relative;
+    top:-70px;
+    right:-40px;
+}
+#navigation.fixed{
+  position:fixed;
+  top:16px;
+  
+    z-index:4;
+}
+
+.data {
+   position:relative;
+   top:100px;
+}
+#navigation{
+  position:absolute;
+  top:90px;
+  left:inherit;
+  width:inherit;
+ 
+
+}
+
+#Voters
+{
+    height:30px;
+   display:block;
+   
+   border-style:solid;
+   border-color:#45F2F2;
+   border-width:2px;
+}
+
+#histories
+{
+   
+    margin-bottom:2px;
+   height:70px;
+   display:block;
+   
+   border-style:solid;
+   border-color:#808080;
+   border-width:2px;
+  position:relative;
+  left:-35px;
+}
+.info
+{
+ width:300px;
+    display:block;
+    float:right;
+    position:relative;
+    top:-135px;
+  
+}
+
+a
+{
+    color:Orange;
+
+}
+ a:hover {
+
+}
+
+#remainingpost
+{
+    float:right;
+    font-size:300%;
+    position:relative;
+    top:-40px;
+   
+    color:Orange;
+    margin:0px;
+}
+
+#proposaltext
+{
+    display:inline-block;
+    float:right;
+    width:60px;
+   text-align:center;
+   position:relative;
+   top:-50px;
+   
+}
+
+#votetext
+{
+   
+    float:right;
+    right:-90px;
+ 
+   position:relative;
+   top:0px;
+   
+}
+#proposalselection
+{
+  padding:2px;
+   border-style :solid;
+   height:35px;
+
+
+   margin:0px;
+   position:relative;
+   top:-15px;
+   background-color:grey;
+}
+#share
+{
+     
+   
+   width:99px;
+   position:relative;
+   top:68px;
+    display:inline-block;
+}
+
+#twitterbutton {
+     position:relative;
+   top:70px;
+   width:69px;
+   display:inline-block;
+
+}
+#twitterButton:hover {
+    text-decoration:none;
+}
+#artist
+{
+    border-color: Orange;
+    
+}
+#venue
+{
+     border-color: Orange;
+    
+}
+
+
+#propose
+{
+    position:relative;
+    top:-50px;
+    right:-350px;
+    color:Orange;
+}
+#clear
+{
+    clear:both;
+}
+
+.Vote
+{
+   position:relative;
+  top:0px;
+}
+
+
+
+#img_id
+{
+    visibility:hidden;
+    position:relative;
+    right:-15px;
+}
+
+
+#bio
+{
+ 
+
+    overflow:hidden;
+    width:500px;
+    height:400px;
+    padding-left:10px;
+    position:relative;
+    left:-90px;
+    float:right;
+}
+
+#Ranks {
+    position:relative;
+    top:-600px;
+    right:-500px;
+    width:500px;
+}
+#similarproposals
+{
+
+    width:1000px;
+    height:270px;
+    overflow:hidden;
+}
+
+#SimilarProp
+{
+   
+ 
+    float:left;
+   display:inline-block;
+    overflow:hidden;
+    width:230px;
+    height:230px;
+}
+
+
+#CommentInput
+{
+    float:left;
+    width:680px;
+}
+#button
+{
+   position:relative;
+   right:-72px;
+}
+
+#postComment
+{
+    float:left;
+    margin-left:10px;
+}
+
+.proposalData
+{
+    
+
+}
+
+.LoggedIn
+{
+    position:relative;
+    left:-6px;
+}
+
+#loggedinuser
+{
+    position:relative;
+    right:-180px;
+    top: -45px;
+    margin-bottom:-30px;
+    color:Maroon;
+}
+
+.user
+{
+    position:relative;
+    right:-650px;
+}
+
+#logout
+{
+     position:relative;
+    right:-180px;
+    top:-15px;
+}
+
+#logout:hover
+{
+     cursor:pointer;
+}
+
+#submit_btn
+{
+    position:relative;
+   left:380px;
+}
+#ProposalDetailVote
+{
+    
+    position:relative;
+    color:Orange;
+    
+    width:100px;
+   
+}
+
+#tabs
+{
+   
+    
+}
+
+#registrationform
+{
+    position:relative;
+    right:-180px;
+}
+
+
+
+
+/**** Isotope CSS3 transitions ****/
+
+.isotope,
+.isotope .isotope-item {
+  -webkit-transition-duration: 0.8s;
+     -moz-transition-duration: 0.8s;
+      -ms-transition-duration: 0.8s;
+       -o-transition-duration: 0.8s;
+          transition-duration: 0.8s;
+}
+
+.isotope {
+  -webkit-transition-property: height, width;
+     -moz-transition-property: height, width;
+      -ms-transition-property: height, width;
+       -o-transition-property: height, width;
+          transition-property: height, width;
+}
+
+.isotope .isotope-item {
+  -webkit-transition-property: -webkit-transform, opacity;
+     -moz-transition-property:    -moz-transform, opacity;
+      -ms-transition-property:     -ms-transform, opacity;
+       -o-transition-property:         top, left, opacity;
+          transition-property:         transform, opacity;
+}
+
+/**** disabling Isotope CSS3 transitions ****/
+
+.isotope.no-transition,
+.isotope.no-transition .isotope-item,
+.isotope .isotope-item.no-transition {
+  -webkit-transition-duration: 0s;
+     -moz-transition-duration: 0s;
+      -ms-transition-duration: 0s;
+       -o-transition-duration: 0s;
+          transition-duration: 0s;
+}
+
+/* End: Recommended Isotope styles */

@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<parameters>
+  <parameter name="DefaultConnection-Web.config Connection String" description="DefaultConnection Connection String used in web.config by the application to access the database." defaultValue="Data Source=tcp:qj6obyzyle.database.windows.net,1433;Initial Catalog=botf_db;User Id=msanj1@qj6obyzyle;Password=Msanj24355231" tags="SqlConnectionString">
+    <parameterEntry kind="XmlFile" scope="C:\\Users\\mohsen\\Desktop\\BOTF\\BOTF\\obj\\Release\\Package\\PackageTmp\\Web\.config$" match="/configuration/connectionStrings/add[@name='DefaultConnection']/@connectionString" />
+  </parameter>
+</parameters>

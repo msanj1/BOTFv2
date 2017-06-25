@@ -1,0 +1,177 @@
+﻿@model BOTF.Models.LocalPasswordModel
+@{
+    ViewBag.Title = "Manage Account";
+}
+
+<hgroup class="title">
+    <h1>@ViewBag.Title.</h1>
+</hgroup>
+
+<p class="message-success">@ViewBag.StatusMessage</p>
+
+<p>You're logged in as <strong>@User.Identity.Name</strong>.</p>
+@Html.ActionLink("Take me to my Profile Page","Index", "Profile", new {Id= WebSecurity.CurrentUserId},null)
+@if (ViewBag.HasLocalPassword)
+{
+    @Html.Partial("_ChangePasswordPartial")
+}
+else
+{ 
+    @Html.Partial("_SetPasswordPartial")
+}
+
+<table id="profiledetails" class="table">
+    <tr>
+        <th>Name</th>
+        <th>Username</th>
+        <th>Email</th>
+        <th>Proposals Left</th>
+        <th>Votes Left</th>
+        <th>Profile Picture</th>
+    </tr>
+    <tr>
+        <td>@ViewBag.user.Name</td>
+        <td>@WebSecurity.CurrentUserName</td>
+        <td>@ViewBag.user.Email</td>
+        <td>@ViewBag.user.RemainingProposals</td>
+        <td>@ViewBag.user.RemainingVotes</td>
+        <td><img src="@ViewBag.user.Image" height="50px" width="50px"/></td>
+    </tr>
+   
+</table>
+
+<div id="VoteHistory"></div>
+<div id="ProposalHistory"></div>
+<section id="externalLogins">
+    @Html.Action("RemoveExternalLogins")
+
+    <h3>Add an external login</h3>
+    @Html.Action("ExternalLoginsList", new { ReturnUrl = ViewBag.ReturnUrl })
+</section>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+     <script  id="VHistory" type="text/x-handlebars-template">
+            <h3>Vote History</h3>
+    <table id="votehistorydetails" class="table">
+   
+        <table id="votehistorydetails" class="table">
+            <tr>
+                <th></th>
+                <th>Artist</th>
+                <th>Venue</th>
+                <th></th>
+            </tr>
+            <div class="votehistory">
+     {{#each History.$values}}
+       
+            <tr >
+                <td>
+                    <img src="{{Image}}" width="30px" height="30px" /></td>
+                <td>{{Artist}}
+                </td>
+                <td>{{Venue}}
+                </td>
+                <td> <a id="unvote" data-Id={{VoteId}} data-ProposalId={{ProposalId}}>unvote!</a></td>
+
+            </tr>
+       
+       
+   {{/each}}
+            </div>
+
+        </table>
+
+     </script>
+   
+     <script  id="PHistory" type="text/x-handlebars-template">
+        <h3>Proposal History</h3>
+        <table  class="table">
+            <div class="votehistory">
+                {{#each History.$values}}
+                <tr data-id={{ProposalId}}>
+                        <td >
+
+                            
+                             @{string description = "{{Artist}}" + " @ " + "{{Venue}}";}
+                             <a href ='@Url.Content("~/Proposal/Index/{{ProposalId}}")'>@description</a>
+       
+                        </td>
+                </tr>
+                {{/each}}
+            </div>
+        </table>
+     </script>
+
+
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var votehistory = $("#VHistory").html();
+            vhistory = Handlebars.compile(votehistory);
+            var proposalhistory = $("#PHistory").html();
+            phistory = Handlebars.compile(proposalhistory);
+            GetUsersVoteHistory();
+            GetUsersProposalHistory();
+        });
+
+        //events
+        $('#unvote').live('click',function(){
+          
+            $.ajax({
+                url: '@Url.RouteUrl("DefaultApi", new { httproute = "", controller = "VoteHistory" })' ,
+                data:{Id:$(this).attr('data-Id'), ProposalId:$(this).attr('data-ProposalId')},
+                
+                   type: "DELETE",
+                    statusCode: {
+                        200: function () {
+                            console.log("Vote was unvoted Successfully");
+                        },
+                        304: function () {
+                            console.log("Vote was not unvoted");
+                        },
+                        400:function(){
+                            alert("Bad Request");
+                        }
+
+                    }
+               });
+        });
+        //end events
+
+        //functions
+        function GetUsersVoteHistory() {
+            $.ajax({
+                url: '@Url.RouteUrl("DefaultApi", new { httproute = "", controller = "VoteHistory" })' ,
+                data:{id:@WebSecurity.CurrentUserId, voteOrproposal:false},
+                type: "GET",
+                success: function (data) {
+                    console.log(data);
+                    //console.log(vhistory({History:data}));
+                    $('#VoteHistory').html(vhistory({History:data}));
+                
+                }
+
+            });
+        };
+
+        function GetUsersProposalHistory() {
+            $.ajax({
+                url: '@Url.RouteUrl("DefaultApi", new { httproute = "", controller = "VoteHistory" })' ,
+                data:{id:@WebSecurity.CurrentUserId, voteOrproposal:true},
+                type: "GET",
+                success: function (data) {
+                    console.log(data);
+                    
+                    $('#ProposalHistory').html(phistory({History:data}));
+                   
+                }
+
+            });
+        };
+        //end functions
+
+
+    </script>
+}

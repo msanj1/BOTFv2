@@ -1,0 +1,218 @@
+﻿@model IEnumerable<BOTF.Models.Slider>
+@{
+    ViewBag.Title = "SliderContent";
+}
+
+
+
+<div class="row">
+    <div class="span2">
+
+        <ul class="nav nav-tabs nav-stacked">
+              <li ><a href='@Url.Action("Index","Management")'>Staff Picks</a></li>
+              <li class="active"><a href='@Url.Action("SliderContent","Management")'>Slider Contents</a></li>
+            
+        </ul>
+    </div>
+    <div class="span10">
+         <h3>Save new Slider Content</h3>
+          @{
+                if (ViewBag.Prefil != null)
+                {
+                    <div id ="imagePrefil"> <img src='@ViewBag.Prefil.Image' class="img-rounded" width="400px" height="400px"/></div>
+                }    
+            }
+            @using (Html.BeginForm("RegisterSliderContent", "Management", FormMethod.Post, new { enctype = "multipart/form-data" }))
+            {
+                @Html.ValidationSummary()
+                
+                <div class="control-group">
+                    <label class="control-label" for="Title">Title</label>
+                    <div class="controls">
+                        <input type="text" id="Title" placeholder="Title" name="Title" value="@{if (ViewBag.Prefil != null)
+                                                                                                {@ViewBag.Prefil.Title;
+                                                                                                }}" >
+                    </div>
+                </div>
+                 <div class="control-group">
+                    <label class="control-label" for="Description">Description</label>
+                    <div class="controls">
+                        <textarea rows=3 id="Description" name="Description" >@{if (ViewBag.Prefil != null)
+                                                                                {@ViewBag.Prefil.Description;
+                                                                                }}</textarea>
+                    </div>
+                </div>
+                 <div class="control-group">
+                     <div class="controls">
+                         <input type="file" class="input-xlarge" id="Image" name="Image" onchange="upload_img(this);">
+                         <img id="img_id" src="#" alt="" class="img-rounded" width="50px" height="50px">
+                     </div>
+                </div>
+                <div class="control-group">
+                    <div class="controls">
+                        <label class="control-label" for="Link">Link</label>
+                        <div class="controls">
+                            <input type="text" id="Link" placeholder="Link" name="Link" value="@{if (ViewBag.Prefil != null)
+                                                                                                 {@ViewBag.Prefil.Link;
+                                                                                                 }}">
+                        </div>
+                    </div>
+                </div>
+                 <input type="hidden" id="Id"  name="Id" value="@{if (ViewBag.Prefil != null)
+                                                                                                 {@ViewBag.Prefil.Id;
+                                                                                                 }}" />
+                <button type="submit" class="btn">Save</button>
+                <a class="btn" href="@Url.Action("SliderContent", new { Id=0})">Clear</a>
+             
+            }
+            <div class="row">
+                   <div class="span5">
+                <h3>List</h3>
+            <div id="SliderContents"></div>
+
+            </div>
+
+             <div class="span5">
+                 <div class="availablecontent">
+                     <h3>Available Content</h3>
+                     <div class="pre-scrollable" style="width: 400px;">
+                         @foreach (var item in Model)
+                         {
+                             <pre style="height: 20px;">
+                    <div id="List" >@Html.ActionLink(item.Title, "SliderContent", new { item.Id })  <span><a id="Add" data-Id="@item.Id" >Add</a><a id="RemoveList" data-Id="@item.Id" >Remove</a></span></div>
+                   
+                   
+                 
+                </pre>
+
+
+              
+                    }
+                     </div>
+                 </div>
+          
+            </div>
+            </div>
+         
+           
+            
+           
+    </div>
+</div>
+
+@section scripts{
+     <script  id="SliderList" type="text/x-handlebars-template">
+         <div class ="pre-scrollable" style="width:500px;" >
+           {{#each Contents.$values}}
+                <pre style="height:20px;">
+                <div id="List">{{Title}}<span><a id="Remove" data-Id={{Id}}>Remove</a></span></div>
+                </pre> 
+          {{/each}}
+         </div>
+    </script>
+
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var list = $("#SliderList").html();
+            slider = Handlebars.compile(list);
+            GetListOfContent();
+        });
+
+        //events
+        $('#RemoveList').live("click", function () {
+            //console.log($(this).attr('data-Id'));
+
+            $.ajax({
+                url: '@Url.RouteUrl("DefaultApi", new { httproute = "", controller = "Slider" })',
+                type: "DELETE",
+                data: { Id: $(this).attr('data-id'), List: true },
+                statusCode: {
+
+                    400: function () {
+                        console.log("Id did not exist");
+                    },
+                    201: function () {
+                        console.log("Content was successfully added to the list");
+                        GetListOfContent();
+                    }
+
+                }
+
+            });
+         });
+
+        $('#Add').live("click", function () {
+            //console.log($(this).attr('data-Id'));
+
+            $.ajax({
+                url: '@Url.RouteUrl("DefaultApi", new { httproute = "", controller = "Slider" })' + '/' + $(this).attr('data-Id'),
+               type: "POST",
+              
+               statusCode: {
+                  
+                   400: function () {
+                       console.log("Id did not exist");
+                   },
+                   201: function () {
+                       console.log("Content was successfully added to the list");
+                       GetListOfContent();
+                   }
+
+               }
+
+           });
+        });
+
+        $('#Remove').live("click", function (){
+            console.log($(this).attr('data-id'));
+            $.ajax({
+                url: '@Url.RouteUrl("DefaultApi", new { httproute = "", controller = "Slider" })' ,
+                type: "DELETE",
+                data:{Id:$(this).attr('data-id'), List:false},
+                  statusCode: {
+
+                      400: function () {
+                          console.log("Id did not exist: bad request");
+                      },
+                      200: function () {
+                          console.log("Content was successfully deleted from the list");
+                          GetListOfContent();
+                      }
+
+                  }
+              });
+        });
+        //events end
+
+        //functions
+        function GetListOfContent() {
+            $.ajax({
+                url: '@Url.RouteUrl("DefaultApi", new { httproute = "", controller = "Slider" })' ,
+                  type: "GET",
+                  success: function (data) {
+                      console.log(data);
+                      
+                      //console.log(slider({ Contents: data }));
+                      $('#SliderContents').html(slider({ Contents: data }));
+                  }
+              });
+        }
+
+        function upload_img(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    $('#img_id').attr('src', e.target.result).css("visibility", "visible");
+                }
+
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+        //functions end
+
+       
+    </script>
+     
+}
