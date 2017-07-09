@@ -193,3 +193,10 @@ C:\Users\msanj1\Documents\GitHub\BOTF\BOTF\bin\DotNetOpenAuth.OpenId.xml
 C:\Users\msanj1\Documents\GitHub\BOTF\BOTF\bin\DotNetOpenAuth.OpenId.RelyingParty.xml
 C:\Users\msanj1\Documents\GitHub\BOTF\BOTF\obj\Debug\BOTF.dll
 C:\Users\msanj1\Documents\GitHub\BOTF\BOTF\obj\Debug\BOTF.pdb
+C:\Users\msanj1\Documents\GitHub\BOTF\BOTF\obj\Debug\BOTF.csprojResolveAssemblyReference.cache
+C:\Users\msanj1\Documents\GitHub\BOTF\BOTF\bin\System.Net.Http.Formatting.dll
+C:\Users\msanj1\Documents\GitHub\BOTF\BOTF\bin\System.Web.Http.dll
+C:\Users\msanj1\Documents\GitHub\BOTF\BOTF\bin\System.Web.Http.WebHost.dll
+C:\Users\msanj1\Documents\GitHub\BOTF\BOTF\bin\System.Net.Http.Formatting.xml
+C:\Users\msanj1\Documents\GitHub\BOTF\BOTF\bin\System.Web.Http.xml
+C:\Users\msanj1\Documents\GitHub\BOTF\BOTF\bin\System.Web.Http.WebHost.xml

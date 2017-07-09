@@ -246,8 +246,8 @@ a:hover {
 
 #button
 {
-   float:left;
-   top:-25px;
+   /*float:left;
+   top:-25px;*/
    
 }
 
@@ -349,7 +349,7 @@ a:hover {
 {
    
     margin-bottom:2px;
-   height:100px;
+   /*height:100%;*/
    display:block;
     border-style:solid;
     border-color:grey;
@@ -521,8 +521,8 @@ a
 }
 #button
 {
-   position:relative;
-   right:-72px;
+   /*position:relative;
+   right:-72px;*/
 }
 
 #postComment

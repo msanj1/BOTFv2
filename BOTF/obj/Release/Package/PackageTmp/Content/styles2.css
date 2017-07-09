@@ -169,13 +169,13 @@ a:hover {
 #numberofvotes
 {
     color:Orange;
-     float:right;
+     /*float:right;*/
     font-size:300%;
-    position:relative;
-   right:-700px;
-   top:10px;
+    /*position:relative;
+   /*right:-700px;*/
+    top: 10px;
     color:Orange;
-
+    position:relative;
     
 }
 
@@ -239,15 +239,15 @@ a:hover {
 #commentinput
 {
     height:10px;
- border-color:Orange;
+ /*border-color:Orange;*/
    position:relative;
    top:-4px;
 }
 
 #button
 {
-   float:left;
-   top:-25px;
+   /*float:left;
+   top:-25px;*/
    
 }
 
@@ -266,7 +266,7 @@ a:hover {
     position:relative;
     top:-13px;
     
-    border-color: Orange;
+    /*border-color: Orange;*/
     
 }
 #ProposalImage
@@ -349,14 +349,17 @@ a:hover {
 {
    
     margin-bottom:2px;
-   height:70px;
+   /*height:100%;*/
    display:block;
-   
-   border-style:solid;
-   border-color:#808080;
-   border-width:2px;
-  position:relative;
-  left:-35px;
+    border-style:solid;
+    border-color:grey;
+    border-width:1px;
+    padding: 5px;
+   /*border-style:solid;*/
+   /*border-color:#808080;*/
+   /*border-width:2px;*/
+  /*position:relative;*/
+  /*left:-35px;*/
 }
 .info
 {
@@ -379,23 +382,23 @@ a
 
 #remainingpost
 {
-    float:right;
+    /*float:right;*/
     font-size:300%;
-    position:relative;
-    top:-40px;
+    /*position:relative;
+    top:-40px;*/
    
     color:Orange;
-    margin:0px;
+    /*margin:0px;*/
 }
 
 #proposaltext
 {
-    display:inline-block;
-    float:right;
+    /*display:inline-block;*/
+    /*float:right;*/
     width:60px;
-   text-align:center;
-   position:relative;
-   top:-50px;
+   /*text-align:center;*/
+   /*position:relative;*/
+   /*top:-50px;*/
    
 }
 
@@ -441,16 +444,7 @@ a
 #twitterButton:hover {
     text-decoration:none;
 }
-#artist
-{
-    border-color: Orange;
-    
-}
-#venue
-{
-     border-color: Orange;
-    
-}
+
 
 
 #propose
@@ -527,8 +521,8 @@ a
 }
 #button
 {
-   position:relative;
-   right:-72px;
+   /*position:relative;
+   right:-72px;*/
 }
 
 #postComment

@@ -25,7 +25,6 @@
                             if (Model.Name != null)
                             {
                             <li><a data-toggle="modal" data-target="#myModal">Invite TT Friends</a></li>
-                            <div id="numberofvotes">@Model.RemainingVotes</div>
                              <li> <a  onclick="sendRequestInvite()">Invite FB Friends</a></li>
                             } 
                         }
@@ -39,25 +38,65 @@
                       
                 </div>
                 <!-- /.nav-collapse -->
-         
+            @{
+                if (Model.Name != null)
+                {
+                    <div id="numberofvotes" style="float: right;">@Model.RemainingVotes</div>
+                }
+            }
         </div>
         <!-- /navbar-inner -->
     </div>
-      <div  id="proposalselection">
-         <p>I want <input id="artist" type="text"> at <input id="venue" type="text"  data-provide="typeahead">  @if (Model.Name != null)
-                                                                                                                { <div id = "proposaltext"> Proposals Left</div>}
-         
-         @{
-             if (Model.Name != null)
-             {
-                   
-                   <div id="remainingpost">@Model.RemainingProposals</div>  
+        <div id="proposalselection">
+          
+                <p style="position: absolute; left: 19px; width: 50px; top: 9px; color: white;">I want</p>
 
-                    <input type="button" class="btn" id="propose" data-loading-text="Loading ..." value="Propose"/>
-             }
-          }
+                <input id="artist" type="text" style="position: absolute; left: 70px; width: 200px; top: 4px; " />
+                
+                <p style="position: absolute; left: 295px; width: 30px; top: 9px; color: white;">at</p>
+
+                <input id="venue" type="text" data-provide="typeahead" style="position: absolute; left: 320px; width: 200px; top: 4px; " />
+                @if (Model.Name != null)
+                {
+                    <input type="button" class="btn" id="propose" data-loading-text="Loading ..." value="Propose" style="position: absolute; left: 545px; width: 100px; top: 1px; " />
+                    <div style="display: inline-block;  float: right;  width: 130px;" id="proposaltext">
+                        <div style="display: inline-block;" id="remainingpost">@Model.RemainingProposals</div>
+                        <div style="display: inline-block; width: 50px;">Proposals Left</div>
+
+
+                    </div>
+                    <div style="clear: both;"></div>
+                }
+                @*<div style="position: absolute">
+
+                        <p>I want</p>
+                        <input id="artist" type="text" /> at <input id="venue" type="text" data-provide="typeahead" />
+
+                            @if (Model.Name != null)
+                            {
+                                <input type="button" class="btn" id="propose" data-loading-text="Loading ..." value="Propose" />
+
+                            }
+                    </div>*@
+
          
-   </div>
+
+            @*@{
+                if (Model.Name != null)
+                {
+                    <div style="display: inline-block; width: 200px;" id="proposaltext">
+                        <div style="display: inline-block" id="remainingpost">@Model.RemainingProposals</div>
+                        <div style="display: inherit; width: 50px;">Proposals Left</div>
+
+
+                    </div>
+
+
+
+                }
+            }*@
+
+        </div>
         </div>
 }
 
@@ -104,29 +143,41 @@
         
     </script>
   
-     <script  id="VoteHistory_template" type="text/x-handlebars-template">
-      {{#each VoteHistory.$values}}
-        <div  id= "histories" class="span4">
-          <img id = "profileimage"src='{{UserImage}}'  height="30px" width="30px"/> 
-           <p style="text-align:center;font-size:small;"> <a href="/Profile/Index/{{UserId}}">{{Username}} </a>  voted   <a href="/Proposal/Index/{{ProposalId}}">{{Artist}}  @@ {{Venue}}  </a></p>
-             <div id = "clear"></div>
-          <div id="votenumber" style="display: none;">{{Vote}}</div>
-           @{
-               if (Model.Name != null)
-               {
-                       
-                       <input id="commentinput" type="text" ></input>
-                        <button id="comment" class="btn" data-proposalid={{ProposalId}}>Go</button>
-                         <a  id="button" class="accordion-toggle"  >Comments</a>
-                         <div id="ShowComments" class="collapse" data-proposalid={{ProposalId}} > Loading </div>
-               }
+    <script id="VoteHistory_template" type="text/x-handlebars-template">
+    <div style="height:750px; overflow:hidden">
+        {{#each VoteHistory.$values}}
+        <div id="histories" >
+            <img id="profileimage" src='{{UserImage}}' height="30px" width="30px" />
+            <p style="text-align:center;font-size:small;"> <a href="/Profile/Index/{{UserId}}">{{Username}} </a>  voted   <a href="/Proposal/Index/{{ProposalId}}">{{Artist}}  @@ {{Venue}}  </a></p>
+            <div id="clear"></div>
+            <div style="height:10px;"></div>
+            @*<div id="votenumber" style="display: none;">{{Vote}}</div>*@
+            @{
+                if (Model.Name != null)
+                {
+                    <div style="position:relative;">
+                        <a style="" id="button" class="accordion-toggle">Comments</a>
+                        <div style="clear:both; margin-top:5px;"></div>
+
+                        <input id="commentinput" type="text" style="  width:72%" />
+                        <button id="comment" class="btn" data-proposalid={{ProposalId}} style="">Go</button>
+                        <div id="ShowComments" class="collapse" data-proposalid={{ProposalId}}> Loading </div>
+                    </div>
+
+                    @*<input id="commentinput" type="text" />
+
+                        <button id="comment" class="btn" data-proposalid={{ProposalId}}>Go</button>*@
+
+                    @*<div id="ShowComments" class="collapse" data-proposalid={{ProposalId}} > Loading </div>*@
+                }
             }
-               
-         
+
+
         </div>
-      {{/each}}
-         
-    </script>    
+        {{/each}}
+
+    </div>
+</script>    
 
      <script  id="CommentsHistory" type="text/x-handlebars-template">
       
@@ -192,19 +243,22 @@
     
     
   
-     <script  id="ContentScroller" type="text/x-handlebars-template">
+    <script  id="ContentScroller" type="text/x-handlebars-template">
      
             
             <div id="myCarousel" class="carousel slide">
                 <div class="carousel-inner">
                      {{#each Contents.$values}}
                           <div class="item">
-                            <img src={{this.Image}} alt="" >
-                            <div class="carousel-caption">
-                              <h4>{{this.Title}}</h4>
-                              <p>{{this.Description}}</p>
-                              <p> <a href = {{Link}}>{{Link}}</a></p>
-                            </div>
+                              <div style="height:500px;">
+                                  <img src={{this.Image}}  style="width:inherit" alt="">
+                                  <div class="carousel-caption" style="width:inherit">
+                                      <h4>{{this.Title}}</h4>
+                                      <p>{{this.Description}}</p>
+                                      <p> <a href={{Link}}>{{Link}}</a></p>
+                                  </div>
+                              </div>
+                         
        
                           </div>
                      {{/each}}
@@ -212,8 +266,8 @@
                       
                
               </div>
-                 <a class="left carousel-control" href="#myCarousel" data-slide="prev">‹</a>
-                <a class="right carousel-control" href="#myCarousel" data-slide="next">›</a>
+                 @*<a class="left carousel-control" href="#myCarousel" data-slide="prev">‹</a>
+                <a class="right carousel-control" href="#myCarousel" data-slide="next">›</a>*@
          </div>
      
      </script>
@@ -884,8 +938,7 @@
         //functions end
   
         
-           
-
+      
 
     </script>
 }
@@ -922,7 +975,7 @@
        </div>
         <div class="span8">
            
-            
+           
               <div id="clear"></div>
             <h4>Friends<h6>Need to have external login</h6></h4>
              <div id="friends"></div>

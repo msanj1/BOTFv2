@@ -17,9 +17,9 @@
         string message = "The event " + @Model.Artist + " at " + @Model.Venue + " has reached " + @Model.Votes + " Get on board and vote for it! ";
      }
    
-    <div id="twitterButton" ></div>
+    @*<div id="twitterButton" ></div>*@
     @*<a href="https://twitter.com/share" data-text="@message" data-url='@Url.Action("Index", "Proposal", new { Model.Id})' class="twitter-share-button" data-lang="en">Tweet</a>*@
-    <div> <button id="share"  class="btn" ><img src="~/Content/images/facebook-icon.png" width="25px" height="25px"/>Share</button> </div> 
+    @*<div> <button id="share"  class="btn" ><img src="~/Content/images/facebook-icon.png" width="25px" height="25px"/>Share</button> </div>*@ 
     
     <img  src='@Model.Image' class="img-rounded"  height="400px" width="400px" />
     <div id="bio">
@@ -40,16 +40,14 @@
            
          <div class ="row">
             <div class="span2"></div>
-            <div class="span8">
-                 <input id="CommentInput" type="text"></input>
-                 <a id="postComment" class="btn"  data-proposalid ="@Model.Id">Post</a>
-            </div>
+             <input id="CommentInput" type="text" />
+             <a id="postComment" class="btn" data-proposalid="@Model.Id">Post</a>
             <div class="span2"></div>
         </div>
         <div class ="row">
-            <div class="span2"></div>
-            <div class="span8 pre-scrollable" id="comments" ></div>
-            <div class="span2"></div>
+            @*<div class="span2"></div>*@
+            <div class="span12 pre-scrollable" style="max-height: 270px;" id="comments"></div>
+            @*<div class="span2"></div>*@
         </div>
            
             <div id="updates" style="display: none;"></div>
@@ -67,7 +65,7 @@
  
       @Scripts.Render("~/Scripts/jquery.signalR-0.5.3.min.js")
    <script src="~/signalr/hubs" type="text/javascript"></script>
-    <pre style="display:inline-block; height:10px"></pre>
+    @*<pre style="display:inline-block; height:10px"></pre>*@
     <script  id="CommentsHistory" type="text/x-handlebars-template">
       
         {{#each Comments.$values}}
@@ -116,7 +114,7 @@
               {{#each Proposals}}
                   <span id="SimilarProp">
                         <h4>{{this.Artist}} @@ {{this.Venue}}</h4>
-                      <a href='@Url.Content("~/Proposal/Index?Id={{Id}}")'> <img src={{this.Image}} height="200px" width="200px"/></a>
+                      <a href='@Url.Content("~/Proposal/Index?Id={{Id}}")'> <img src={{this.Image}} style="height:200px" /></a>
                 
                 
                   </span>

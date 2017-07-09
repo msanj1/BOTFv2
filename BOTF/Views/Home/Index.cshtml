@@ -48,7 +48,7 @@
         <!-- /navbar-inner -->
     </div>
         <div id="proposalselection">
-            <div style="position: absolute; top: 0px;">
+          
                 <p style="position: absolute; left: 19px; width: 50px; top: 9px; color: white;">I want</p>
 
                 <input id="artist" type="text" style="position: absolute; left: 70px; width: 200px; top: 4px; " />
@@ -59,12 +59,13 @@
                 @if (Model.Name != null)
                 {
                     <input type="button" class="btn" id="propose" data-loading-text="Loading ..." value="Propose" style="position: absolute; left: 545px; width: 100px; top: 1px; " />
-                    <div style="display: inline-block; position: absolute; left: 1005px; width: 200px;" id="proposaltext">
+                    <div style="display: inline-block;  float: right;  width: 130px;" id="proposaltext">
                         <div style="display: inline-block;" id="remainingpost">@Model.RemainingProposals</div>
                         <div style="display: inline-block; width: 50px;">Proposals Left</div>
 
 
                     </div>
+                    <div style="clear: both;"></div>
                 }
                 @*<div style="position: absolute">
 
@@ -78,7 +79,6 @@
                             }
                     </div>*@
 
-                </div>
          
 
             @*@{
@@ -143,37 +143,41 @@
         
     </script>
   
-    <script  id="VoteHistory_template" type="text/x-handlebars-template">
-      {{#each VoteHistory.$values}}
-        <div  id= "histories" class="span4">
-          <img id = "profileimage"src='{{UserImage}}'  height="30px" width="30px"/> 
-           <p style="text-align:center;font-size:small;"> <a href="/Profile/Index/{{UserId}}">{{Username}} </a>  voted   <a href="/Proposal/Index/{{ProposalId}}">{{Artist}}  @@ {{Venue}}  </a></p>
-             <div id = "clear"></div>
+    <script id="VoteHistory_template" type="text/x-handlebars-template">
+    <div style="height:750px; overflow:hidden">
+        {{#each VoteHistory.$values}}
+        <div id="histories" >
+            <img id="profileimage" src='{{UserImage}}' height="30px" width="30px" />
+            <p style="text-align:center;font-size:small;"> <a href="/Profile/Index/{{UserId}}">{{Username}} </a>  voted   <a href="/Proposal/Index/{{ProposalId}}">{{Artist}}  @@ {{Venue}}  </a></p>
+            <div id="clear"></div>
             <div style="height:10px;"></div>
-          <div id="votenumber" style="display: none;">{{Vote}}</div>
-           @{
-               if (Model.Name != null)
-               {
-                   <div style="position:absolute;">
-                       <a id="button" class="accordion-toggle" style="left:0px; top:0px;">Comments</a>
-                       <input id="commentinput" type="text" style="left:0px; top:0px; width:300px" />
-                       <button id="comment" class="btn" data-proposalid={{ProposalId}} style="left:36px; top:-35px;">Go</button>
-                       <div id="ShowComments" class="collapse" data-proposalid={{ProposalId}}> Loading </div>
-                   </div>
-                 
-                   @*<input id="commentinput" type="text" />
-               
+            @*<div id="votenumber" style="display: none;">{{Vote}}</div>*@
+            @{
+                if (Model.Name != null)
+                {
+                    <div style="position:relative;">
+                        <a style="" id="button" class="accordion-toggle">Comments</a>
+                        <div style="clear:both; margin-top:5px;"></div>
+
+                        <input id="commentinput" type="text" style="  width:72%" />
+                        <button id="comment" class="btn" data-proposalid={{ProposalId}} style="">Go</button>
+                        <div id="ShowComments" class="collapse" data-proposalid={{ProposalId}}> Loading </div>
+                    </div>
+
+                    @*<input id="commentinput" type="text" />
+
                         <button id="comment" class="btn" data-proposalid={{ProposalId}}>Go</button>*@
-                
-                         @*<div id="ShowComments" class="collapse" data-proposalid={{ProposalId}} > Loading </div>*@
-               }
+
+                    @*<div id="ShowComments" class="collapse" data-proposalid={{ProposalId}} > Loading </div>*@
+                }
             }
-               
-         
+
+
         </div>
-      {{/each}}
-         
-    </script>    
+        {{/each}}
+
+    </div>
+</script>    
 
      <script  id="CommentsHistory" type="text/x-handlebars-template">
       
